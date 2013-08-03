@@ -1,0 +1,6 @@
+#Smart DNS NS record config file
+
+#NS record
+test.test.com:
+  record: ns1.sdns.xiaomidns.com ns2.sdns.xiaomidns.com ns7.sdns.xiaomidns.com ns11.sdns.xiaomidns.com
+  ttl: 600

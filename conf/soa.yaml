@@ -1,0 +1,11 @@
+#Smart DNS soa config file
+
+#SOA record
+test.test.com:
+  record: ns1.test.test.com
+  email: sa.test.com
+  serial: 20120627
+  refresh: 300
+  retry: 300
+  expire: 9527
+  ttl: 3600

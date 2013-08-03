@@ -1,0 +1,19 @@
+#Smart DNS main config file
+
+#dns forward
+#需要支持多个
+dnsforward_ip:
+  - 8.8.8.8
+dnsforward_port: 53
+
+#ip data path
+IPDATA: ../data/ip.csv
+
+#NS record filed
+NSFILE: ../conf/ns.yaml
+
+#SOA record file
+SOAFILE: ../conf/soa.yaml
+
+#A record file
+AFILE: ../conf/a.yaml
