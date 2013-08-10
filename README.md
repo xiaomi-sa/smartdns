@@ -8,8 +8,23 @@ smartdns
 
 ##### 举个简单的例子，我们的一个站点test.test.com同时部署在电信和联通两个机房，该站点在电信机房的ip为1.1.1.1、在联通机房的ip为2.2.2.2，就可以通过smartdns做到该站点域名解析时判断源IP为电信的IP时返回1.1.1.1、判断源IP为联通的IP时返回2.2.2.2，从而达到不同运营商机房流量调度的目的。
 
+## 支持的功能
+支持A、SOA、NS记录的查询，支持DNS forward功能
+
+## 性能
+在虚拟机2.4G CPU上能够处理1000QPS查询请求，打开debug日志后可以到800QPS。3-5台dns server组成的集群已经能够满足大部分站点的需求。
+目前我们正在实现和小流量测试go实现的smartdns，能够1wQPS以上，后续测试稳定后会开源出来，大家敬请期待：）
+
 ## 原理
+TODO
 
 ## 安装
+TODO
 
 ## 测试
+TODO
+
+## 支持
+
+mail: fangshaosen@xiaomi.com
+github: jerryfang8
