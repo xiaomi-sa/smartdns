@@ -13,7 +13,8 @@ smartdns
 
 ## 性能
 在虚拟机2.4G CPU上能够处理1000QPS查询请求，打开debug日志后可以到800QPS。3-5台dns server组成的集群已经能够满足大部分站点的需求。
-目前我们正在实现和小流量测试go实现的smartdns，能够1wQPS以上，后续测试稳定后会开源出来，大家敬请期待：）
+
+目前我们正在实现和小流量测试go实现的smartdns，能够达到1wQPS以上，后续测试稳定后会开源出来，大家敬请期待：）
 
 ## 原理
 TODO
@@ -27,4 +28,5 @@ TODO
 ## 支持
 
 mail: fangshaosen@xiaomi.com
+
 github: jerryfang8
