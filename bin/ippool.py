@@ -77,14 +77,14 @@ class IPPool:
 			else:
 				#ipstart, ipend, country, province, city, sp, domain ip hash
 				self.iphash[ipstart] = [ipstart, ipend, country, province, city, sp, {}]
-				# fangshaosen@xiaomi.com  最好合并后再计算
+				# 最好合并后再计算
 				self.JoinIP(ipstart)				
 		f.close()
 		logger.warning("after load: %s" % ( time.time() ) )
 		self.iplist.sort()
 		logger.warning("after sort: %s" % ( time.time() ) )
 
-	# fangshaosen@xiaomi.com 重写LoadRecord和JoinIP，提升启动效率
+	# 重写LoadRecord和JoinIP，提升启动效率
 	def LoadRecord(self):
 		Add = [8, 4, 2, 1]
 		f = open(self.recordfile, 'r')
