@@ -48,7 +48,7 @@ a.yaml配置文件格式：
 
 初始化阶段，会生成一个名为iphash的dict，具体数据结构如下图：
 
-<a href="http://noops.me/wp-content/uploads/2013/08/iphash数据结构.png"><img src="http://noops.me/wp-content/uploads/2013/08/iphash数据结构-300x135.png" alt="iphash数据结构" width="300" height="135" class="alignnone size-medium wp-image-784" /></a>
+![iphash数据结构](http://noops.me/wp-content/uploads/2013/08/iphash%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.png)
 
 其中，iphash的key为ip.csv每一条记录的起始IP，value为一个list，list长度为6，list前5个字段分别为以该key为起始IP记录的IP段截止、IP段所属国家、IP段所属省份、IP段所属城市、IP段所属ISP，第六个字段是一个hash，key为a.yaml里面配置的域名，value为长度为2的list，iphash[IP段起始][6][域名1][0]为域名1在该IP段的最优解析，iphash[IP段起始][6][域名1][1]为该最优解析的总权值，该总权值暂时只做参考。
 
@@ -56,7 +56,7 @@ iphash初始化过程中最关键的是iphash[IP段起始][6][域名1]的最优�
 
 有了初始化后的iphash数据结构之后，每次请求处理的时候，只需要定位请求IP处在哪个IP段，找到IP段起始IP，然后从iphash中取出最优解析，取出最优解析的过程是O(1)的。具体流程如下：
 
-<a href="http://noops.me/wp-content/uploads/2013/08/ippool的findip方式.png"><img src="http://noops.me/wp-content/uploads/2013/08/ippool的findip方式-111x300.png" alt="ippool的findip方式" width="111" height="300" class="alignnone size-medium wp-image-799" /></a>
+![ippool的findip方法](http://noops.me/wp-content/uploads/2013/08/ippool%E7%9A%84findip%E6%96%B9%E5%BC%8F.png)
 
 ## 代码
 
