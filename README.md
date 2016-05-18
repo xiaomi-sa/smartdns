@@ -76,7 +76,7 @@ git clone smartdns到本地路径，进入script目录，执行install_smartdns.
 
 启动：
 
-进入smartdns的bin路径下，执行sh run_dns.sh即可启动smartdns
+进入smartdns的script路径下，执行sh run_dns.sh即可启动smartdns
 
 ## 测试
 
