@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys, os
+import requests
 from logger import logger
 import time
 import bisect
@@ -11,25 +12,25 @@ import yaml, re
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-
 def ip2long(ip):
-	"convert decimal dotted quad string to long integer"    
-	hexn = ''.join(["%02X" % long(i) for i in ip.split('.')])    
+	"convert decimal dotted quad string to long integer"
+	hexn = ''.join(["%02X" % long(i) for i in ip.split('.')])
 	return long(hexn, 16)
 
-def long2ip(n):    
-	"convert long int to dotted quad string"    
-	d = 256 * 256 * 256    
+def long2ip(n):
+	"convert long int to dotted quad string"
+	d = 256 * 256 * 256
 	q = []
-	while d > 0:       
-		m,n = divmod(n,d)        
-		q.append(str(m))        
-		d = d/256    
+	while d > 0:
+		m,n = divmod(n,d)
+		q.append(str(m))
+		d = d/256
 	return '.'.join(q)
 
 
 class IPPool:
 	def __init__(self, ipfile, recordfile):
+		logger.info("[IPPool] Init.");
 		if not isfile(ipfile):
 			logger.warning("can't find ip data file: %s" % ipfile)
 			# 故意返回数据，另程序退出
@@ -47,25 +48,26 @@ class IPPool:
 		self.iphash = {}
 
 		#初始化存储a.yaml配置
-		self.record = {}		
+		self.record = {}
 		# 存储各个域名的地域对于ip信息
 		self.locmapip = {}
-		
+
 		#load record data
 		self.LoadRecord()
 
 		#load ip data
 		self.LoadIP()
-	
+
 		print 'Init IP pool finished !'
 
 	def LoadIP(self):
+		logger.info("[IPPool] LoadIP.");
 		f = open(self.ipfile, 'r')
 		logger.warning("before load: %s" % ( time.time() ) )
 		for eachline in f:
 			ipstart, ipend, country, province, city, sp = eachline.strip().split(',')
 			ipstart = long(ipstart)
-			ipend = long(ipend)			
+			ipend = long(ipend)
 
 			#如果ip地址为0,忽略
 			if 0 == ipstart:
@@ -78,7 +80,7 @@ class IPPool:
 				#ipstart, ipend, country, province, city, sp, domain ip hash
 				self.iphash[ipstart] = [ipstart, ipend, country, province, city, sp, {}]
 				# 最好合并后再计算
-				self.JoinIP(ipstart)				
+				self.JoinIP(ipstart)
 		f.close()
 		logger.warning("after load: %s" % ( time.time() ) )
 		self.iplist.sort()
@@ -86,6 +88,7 @@ class IPPool:
 
 	# 重写LoadRecord和JoinIP，提升启动效率
 	def LoadRecord(self):
+		logger.info("[IPPool] LoadRecord.");
 		Add = [8, 4, 2, 1]
 		f = open(self.recordfile, 'r')
 		self.record = yaml.load(f)
@@ -109,7 +112,7 @@ class IPPool:
 					match[num] = p[num]
 					if p[num] != "":
 						weight += Add[num]
-				
+
 				if match[0] not in self.locmapip[fqdn]:
 					self.locmapip[fqdn][match[0]] = {}
 					self.locmapip[fqdn][match[0]][match[1]] = {}
@@ -166,12 +169,14 @@ class IPPool:
 				self.iphash[ip][6][fqdnk] = [self.record[fqdnk]['default'], 0]
 
 	def ListIP(self):
+		logger.info("[IPPool] ListIP.");
 		for key in self.iphash:
-			print "ipstart: %s  ipend: %s  country: %s  province: %s  city: %s  sp: %s" % (key, self.iphash[key][1], self.iphash[key][2], self.iphash[key][3], self.iphash[key][4], self.iphash[key][5])
+			logger.info("ipstart: %s  ipend: %s  country: %s  province: %s  city: %s  sp: %s" % (key, self.iphash[key][1], self.iphash[key][2], self.iphash[key][3], self.iphash[key][4], self.iphash[key][5]))
 			for i in self.iphash[key][6]:
-				print "[domain:%s   ip: %s]" % (i, self.iphash[key][6][i][0])
+				logger.info("[domain:%s   ip: %s]" % (i, self.iphash[key][6][i][0]))
 
 	def SearchLocation(self, ip):
+		logger.info("[IPPool] SearchLocation with ip: [%s]." % (ip));
 		ipnum = ip2long(ip)
 		ip_point = bisect.bisect_right(self.iplist, ipnum)
 		i = self.iplist[ip_point - 1]
@@ -183,6 +188,7 @@ class IPPool:
 		return i, j, ipnum
 
 	def FindIP(self, ip, name):
+		logger.info("[IPPool] FindIP with ip: [%s] and name: [%s]." % (ip, name));
 		i, j, ipnum = self.SearchLocation(ip)
 
 		if i in self.iphash:
@@ -207,6 +213,15 @@ class IPPool:
 			logger.warning("can't find ip in iphash, ip:[%s] domain:[%s] ip_list:%s" % (ip, name, ip_list))
 			return ip_list
 
+	def FindIP2(self, ip, name):
+		logger.info("[IPPool] FindIP2 with ip: [%s] and name: [%s]." % (ip, name))
+		response = requests.get("http://ipinfo.io/%s/json" % (ip))
+		if response.status_code == 200:
+			logger.info("[IPPool] FindIP2 found ip infomation: %s" % response.json())
+		else:
+			logger.error("[IPPool] Failed to find ip: [%s] from http://ipinfo.io." % ip)
+
+		return self.FindIP(ip, name)
+
 if __name__ == '__main__':
 	ipcheck = IPPool('../data/ip.csv', '../conf/a.yaml')
-
